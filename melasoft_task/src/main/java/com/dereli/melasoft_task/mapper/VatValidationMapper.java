@@ -1,5 +1,7 @@
 package com.dereli.melasoft_task.mapper;
 
+import com.dereli.melasoft_task.dto.VatValidationResult;
+import eu.europa.ec.taxud.vies.services.checkvat.types.CheckVatResponse;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -11,7 +13,7 @@ public class VatValidationMapper {
                 response.isValid(),
                 response.getName() != null ? response.getName().getValue() : null,
                 response.getAddress() != null ? response.getAddress().getValue() : null,
-                response.getRequestDate()
+                response.getRequestDate().toGregorianCalendar().toZonedDateTime().toString()
         );
     }
 }

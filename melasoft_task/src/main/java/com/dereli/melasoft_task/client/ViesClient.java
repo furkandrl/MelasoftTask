@@ -1,5 +1,9 @@
 package com.dereli.melasoft_task.client;
 
+import eu.europa.ec.taxud.vies.services.checkvat.types.CheckVat;
+import eu.europa.ec.taxud.vies.services.checkvat.types.CheckVatResponse;
+import org.xml.sax.SAXException;
+
 public interface ViesClient {
-    VatValidationResult checkVat(String countryCode, String vatNumber);
+    CheckVatResponse checkVat(CheckVat request)throws SAXException;
 }
