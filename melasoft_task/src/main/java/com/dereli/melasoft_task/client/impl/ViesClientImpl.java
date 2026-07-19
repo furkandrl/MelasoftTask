@@ -12,16 +12,10 @@ import eu.europa.ec.taxud.vies.services.checkvat.types.ObjectFactory;
 import jakarta.xml.ws.BindingProvider;
 import jakarta.xml.ws.Holder;
 import jakarta.xml.ws.soap.SOAPFaultException;
-import org.apache.cxf.endpoint.Client;
-
-import org.apache.cxf.frontend.ClientProxy;
-import org.apache.cxf.message.Message;
-import org.apache.cxf.transport.http.HTTPConduit;
-import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.ws.WebServiceException;
+import jakarta.xml.ws.WebServiceException;
 import org.xml.sax.SAXException;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -47,6 +41,7 @@ public class ViesClientImpl implements ViesClient {
         int attempt = 0;
 
         while (true) {
+            String faultCode = null;
             try {
                 Holder<String> cc = new Holder<>(request.getCountryCode());
                 Holder<String> vn = new Holder<>(request.getVatNumber());
@@ -65,7 +60,7 @@ public class ViesClientImpl implements ViesClient {
                 response.setAddress(factory.createCheckVatResponseAddress(address.value));
                 return response;
             } catch (SOAPFaultException exc) {
-                String faultCode = exc.getFault().getFaultString();
+                faultCode = exc.getFault().getFaultString();
                 if (faultCode.equals(ViesFaultEnum.INVALID_INPUT.name())) {
                     throw exc;
                 }
@@ -77,6 +72,11 @@ public class ViesClientImpl implements ViesClient {
                             faultCode, attempt, properties.getRetry().getMaxAttempts());
 
                     if (attempt >= properties.getRetry().getMaxAttempts()) {
+                        log.error(
+                                "VIES request failed after {} attempts. Last fault: {}",
+                                properties.getRetry().getMaxAttempts(),
+                                faultCode
+                        );
                         throw exc;
                     }
 
@@ -101,7 +101,6 @@ public class ViesClientImpl implements ViesClient {
 
                     cause = cause.getCause();
                 }
-
                 throw exc;
             }
 
