@@ -16,6 +16,7 @@ java -jar target\melasoft_task-0.0.1-SNAPSHOT.jar INV-2026-0001 DE 129273398 FR 
 ```
 
 Örnek (Windows):
+```
 .\mvnw.cmd clean package 
 java -jar target\melasoft_task-0.0.1-SNAPSHOT.jar INV-2026-0001 DE 129273398 FR 40303265045
-
+```

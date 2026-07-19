@@ -32,7 +32,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                 invoice.getBuyerVatNumber());
 
         if (sellerResponse.isValid() && buyerResponse.isValid()) {
-            log.info("Invoice can be issued.");
+            log.info("****Invoice can be issued.");
 
             log.info("Seller: {}", sellerResponse.getName().getValue());
             log.info("Address: {}", sellerResponse.getAddress().getValue());
@@ -41,10 +41,10 @@ public class InvoiceServiceImpl implements InvoiceService {
             log.info("Address: {}", buyerResponse.getAddress().getValue());
 
         } else if (!sellerResponse.isValid()) {
-            log.info("Invoice cannot be issued: Seller VAT number is invalid.");
+            log.info("***Invoice cannot be issued: Seller VAT number is invalid.");
 
         } else {
-            log.info("Invoice cannot be issued: Buyer VAT number is invalid.");
+            log.info("***Invoice cannot be issued: Buyer VAT number is invalid.");
         }
     }
 

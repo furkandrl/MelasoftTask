@@ -3,7 +3,6 @@ package com.dereli.melasoft_task;
 import com.dereli.melasoft_task.config.ViesClientProperties;
 import com.dereli.melasoft_task.model.InvoiceModel;
 import com.dereli.melasoft_task.service.InvoiceService;
-import com.dereli.melasoft_task.service.impl.InvoiceServiceImpl;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
