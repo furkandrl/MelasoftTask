@@ -1,13 +1,16 @@
 package com.dereli.melasoft_task;
 
+import com.dereli.melasoft_task.config.ViesClientProperties;
 import com.dereli.melasoft_task.model.InvoiceModel;
 import com.dereli.melasoft_task.service.InvoiceService;
 import com.dereli.melasoft_task.service.impl.InvoiceServiceImpl;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication
+@EnableConfigurationProperties(ViesClientProperties.class)
 public class MelasoftTaskApplication implements CommandLineRunner {
 
     private final InvoiceService invoiceService;
@@ -25,7 +28,7 @@ public class MelasoftTaskApplication implements CommandLineRunner {
 
         if (args.length < 5) {
             System.out.println("Kullanim: java Main <faturaNo> <saticiUlke> <saticiKdvNo> <aliciUlke> <aliciKdvNo>");
-            System.exit(1);
+            return;
         }
 
         InvoiceModel invoice = new InvoiceModel(

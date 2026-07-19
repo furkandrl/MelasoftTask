@@ -8,7 +8,6 @@ import eu.europa.ec.taxud.vies.services.checkvat.types.CheckVatResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.xml.sax.SAXException;
 
 @Service
 public class InvoiceServiceImpl implements InvoiceService {

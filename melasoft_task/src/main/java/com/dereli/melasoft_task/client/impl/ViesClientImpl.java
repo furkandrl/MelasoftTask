@@ -1,6 +1,7 @@
 package com.dereli.melasoft_task.client.impl;
 
 import com.dereli.melasoft_task.client.ViesClient;
+import com.dereli.melasoft_task.config.ViesClientProperties;
 import com.dereli.melasoft_task.enums.ViesFaultEnum;
 import com.dereli.melasoft_task.exception.SchemaValidationException;
 import eu.europa.ec.taxud.vies.services.checkvat.CheckVatPortType;
@@ -19,7 +20,6 @@ import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.WebServiceException;
 import org.xml.sax.SAXException;
@@ -30,43 +30,18 @@ import javax.xml.datatype.XMLGregorianCalendar;
 public class ViesClientImpl implements ViesClient {
     private static final Logger log = LoggerFactory.getLogger(ViesClientImpl.class);
 
-
-    @Value("${vies.retry.max-attempts}")
-    private int maxAttempts;
-
-    @Value("${vies.retry.delay-ms}")
-    private long retryDelayMs;
-
-    @Value("${vies.connection-timeout-ms}")
-    private long connectionTimeoutMs;
-
-    @Value("${vies.receive-timeout-ms}")
-    private long receiveTimeoutMs;
-
     private final CheckVatPortType port;
-    ObjectFactory factory = new ObjectFactory();
+    private final ViesClientProperties properties;
+    private final ObjectFactory factory = new ObjectFactory();
 
-    public ViesClientImpl() {
-        CheckVatService service = new CheckVatService();
-        this.port = service.getCheckVatPort();
-        Client client = ClientProxy.getClient(port);
-        HTTPConduit conduit = (HTTPConduit) client.getConduit();
-
-        HTTPClientPolicy policy = new HTTPClientPolicy();
-        policy.setConnectionTimeout(connectionTimeoutMs);
-        policy.setReceiveTimeout(receiveTimeoutMs);
-
-        conduit.setClient(policy);
-
-        BindingProvider bp = (BindingProvider) port;
-        bp.getRequestContext().put(
-                Message.SCHEMA_VALIDATION_ENABLED,
-                Boolean.TRUE);
+    public ViesClientImpl(ViesClientProperties properties, CheckVatPortType port) {
+        this.port = port;
+        this.properties = properties;
     }
 
 
-
-    public CheckVatResponse checkVat(CheckVat request) throws RuntimeException {
+    @Override
+    public CheckVatResponse checkVat(CheckVat request){
 
         CheckVatResponse response = new CheckVatResponse();
         int attempt = 0;
@@ -99,9 +74,9 @@ public class ViesClientImpl implements ViesClient {
                     attempt++;
 
                     log.warn("VIES returned '{}'. Retry {}/{}.",
-                            faultCode, attempt, maxAttempts);
+                            faultCode, attempt, properties.getRetry().getMaxAttempts());
 
-                    if (attempt >= maxAttempts) {
+                    if (attempt >= properties.getRetry().getMaxAttempts()) {
                         throw exc;
                     }
 
@@ -146,7 +121,7 @@ public class ViesClientImpl implements ViesClient {
     private void sleep() {
 
         try {
-            Thread.sleep(retryDelayMs);
+            Thread.sleep(properties.getRetry().getDelayMs());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new IllegalStateException("Retry interrupted", e);
