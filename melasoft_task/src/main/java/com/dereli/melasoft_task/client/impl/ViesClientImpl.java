@@ -2,6 +2,7 @@ package com.dereli.melasoft_task.client.impl;
 
 import com.dereli.melasoft_task.client.ViesClient;
 import com.dereli.melasoft_task.enums.ViesFaultEnum;
+import com.dereli.melasoft_task.exception.SchemaValidationException;
 import eu.europa.ec.taxud.vies.services.checkvat.CheckVatPortType;
 import eu.europa.ec.taxud.vies.services.checkvat.CheckVatService;
 import eu.europa.ec.taxud.vies.services.checkvat.types.CheckVat;
@@ -65,7 +66,7 @@ public class ViesClientImpl implements ViesClient {
 
 
 
-    public CheckVatResponse checkVat(CheckVat request) throws SAXException {
+    public CheckVatResponse checkVat(CheckVat request) throws RuntimeException {
 
         CheckVatResponse response = new CheckVatResponse();
         int attempt = 0;
@@ -116,10 +117,10 @@ public class ViesClientImpl implements ViesClient {
                 Throwable cause = exc;
                 while (cause != null) {
 
-                    if (cause instanceof SAXException saxException) {
-                        throw new SAXException(
+                    if (cause instanceof SAXException) {
+                        throw new SchemaValidationException(
                                 "SOAP response failed XSD validation",
-                                exc
+                                exc.getCause()
                         );
                     }
 
